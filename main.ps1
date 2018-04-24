@@ -87,8 +87,7 @@ function Configure
 
 function Install-Features
 {
-    foreach($dep in $IIS_DEPENDENCIES)
-    {
+    foreach($dep in $IIS_DEPENDENCIES) {
         Install-WindowsFeature -Name $dep;
     }
 }
@@ -146,14 +145,10 @@ function Clean-All {
 
 function If-Dependencies-Exists
 {
-    foreach($dep in $IIS_DEPENDENCIES)
-    {
-        if ((get-windowsfeature $dep).installed)
-        {
+    foreach($dep in $IIS_DEPENDENCIES) {
+        if ((get-windowsfeature $dep).installed) {
             continue;
-        }
-        else
-        {
+        } else {
             return $false;
         }
     }
@@ -176,8 +171,7 @@ function If-New-Commit-Exists
     $bodyString = (curl https://api.github.com/repos/$GITHUB_USER/$GITHUB_REPO/branches/$GITHUB_BRANCH).content;
     $body = ConvertFrom-Json -InputObject $bodyString;
     $sha = $body.commit.sha;
-    if (!$SCRIPT:COMMIT_SHA)
-    {
+    if (!$SCRIPT:COMMIT_SHA) {
         $SCRIPT:COMMIT_SHA = $sha;
     }
     $if_shas_equal = $SCRIPT:COMMIT_SHA -eq $sha;
@@ -227,8 +221,7 @@ function Repair-Deploy
     $areDependenciesOk = If-Dependencies-Exists;
 
     Clean-All;
-    if (!$areDependenciesOk)
-    {
+    if (!$areDependenciesOk) {
         Install-Features;
     }
     Deploy;
@@ -254,8 +247,7 @@ function Check-Consistent
 
 function Check-Consistent-Daemon
 {
-    while(1)
-    {
+    while(1) {
         start-sleep -seconds $CHECK_CONSISTANT_SEC_INTERVAL;
         Check-Consistent;
     }
@@ -264,8 +256,8 @@ function Check-Consistent-Daemon
 function Start-Deploy
 {
     param([bool] $isDaemon);
-    if ($isDaemon)
-    {
+    Initial-Deploy;
+    if ($isDaemon) {
         Check-Consistent-Daemon;
     }
 }
